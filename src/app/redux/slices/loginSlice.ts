@@ -1,7 +1,5 @@
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
 import toast from "react-hot-toast";
 
 interface IUserData {
@@ -11,22 +9,25 @@ interface IUserData {
 
 export const signIn = createAsyncThunk(
   "loginSlice/SignIn",
-  async (userData: IUserData) => {
+  async (userData: IUserData, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
-        "https://linked-posts.routemisr.com/users/signin",
+        "https://route-posts.routemisr.com/users/signin",
         userData
       );
+      // API response shape: { success: true, message: "signed in successfully", data: { token, user } }
+      if (data.success) {
+        localStorage.setItem("token", data.data.token);
+      }
       toast.success(data.message);
       return data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error:any) {
-      toast.error(error.response.data.error);
-      return error.response.data.error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error.response.data.message || error.response.data.error);
+      return rejectWithValue(error.response.data);
     }
   }
 );
-
 
 interface IinitialState {
   token: string | null;
@@ -34,7 +35,7 @@ interface IinitialState {
 }
 
 const initialState: IinitialState = {
-  token: "",
+  token: null,
   loading: false,
 };
 
@@ -44,13 +45,14 @@ export const login = createSlice({
   reducers: {
     clearData: (state) => {
       state.token = null;
-      localStorage.removeItem("token");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+      }
     },
     getToken: (state) => {
-      if (localStorage.getItem("token")) {
-        state.token = localStorage.getItem("token");
-      } else {
-        state.token = null;
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("token");
+        state.token = token ?? null;
       }
     },
   },
@@ -60,14 +62,16 @@ export const login = createSlice({
     });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false;
-      if (action.payload.message === "success") {
-        state.token = action.payload.token;
-        localStorage.setItem("token", action.payload.token);
+      // token is nested inside data.data.token
+      if (action.payload?.success) {
+        state.token = action.payload.data.token;
       }
+    });
+    builder.addCase(signIn.rejected, (state) => {
+      state.loading = false;
     });
   },
 });
+
 export const { clearData, getToken } = login.actions;
 export const loginSlice = login.reducer;
-
-

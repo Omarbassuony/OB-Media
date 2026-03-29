@@ -9,8 +9,14 @@ const nextConfig = {
       {
         //https://linked-posts.routemisr.com/uploads/default-profile.png
         protocol: "https",
-        hostname: "linked-posts.routemisr.com",
+        hostname: "route-posts.routemisr.com",
         pathname: "/uploads/**",
+      },
+      {
+        // Cloudflare R2 CDN used by the API for profile photos and post images
+        protocol: "https",
+        hostname: "pub-3cba56bacf9f4965bbb0989e07dada12.r2.dev",
+        pathname: "/**",
       },
     ],
   },

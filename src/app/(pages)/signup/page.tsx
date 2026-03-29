@@ -22,7 +22,7 @@ export default function SignUp() {
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.signupSlice);
 
-  const { push } = useRouter();
+  const router = useRouter();
   const currencies = [
     {
       value: "male",
@@ -66,21 +66,22 @@ export default function SignUp() {
     validationSchema,
     onSubmit: async (data) => {
       const result = await dispatch(signUp(data));
-      if (result.payload == "success") {
-        push("/signin");
+      if (result.payload?.success) {
+        router.replace("/signin");
       }
     },
   });
 
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      push("/");
-      setIsClient(false);
-    } else {
-      setIsClient(true);
+    if (typeof window !== "undefined") {
+      if (localStorage.getItem("token")) {
+        router.replace("/");
+      } else {
+        setIsClient(true);
+      }
     }
-  }, [push]);
+  }, [router]);
 
   return (
     <>

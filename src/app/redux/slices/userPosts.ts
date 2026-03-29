@@ -24,14 +24,15 @@ export const getUserPosts = createAsyncThunk(
   async () => {
     try {
       const { data } = await axios.get(
-        "https://linked-posts.routemisr.com/users/664bcf3e33da217c4af21f00/posts",
+        "https://route-posts.routemisr.com/users/664bcf3e33da217c4af21f00/posts",
         {
           headers: {
             token: localStorage.getItem("token"),
           },
         }
       );
-      return data.posts;
+      // API response: { success: true, data: { posts: [...] } }
+      return data.data?.posts ?? data.posts;
     } catch (error) {
       return error;
     }
@@ -42,7 +43,7 @@ export const AddUserPost = createAsyncThunk(
   async (formData: FormData) => {
     try {
       const { data } = await axios.post(
-        "https://linked-posts.routemisr.com/posts",
+        "https://route-posts.routemisr.com/posts",
         formData,
         {
           headers: {
@@ -65,7 +66,7 @@ export const deletePost = createAsyncThunk(
   async (id: string) => {
     try {
       const { data } = await axios.delete(
-        `https://linked-posts.routemisr.com/posts/${id}`,
+        `https://route-posts.routemisr.com/posts/${id}`,
         {
           headers: {
             token: localStorage.getItem("token"),
@@ -85,7 +86,7 @@ export const updatePost = createAsyncThunk(
   async ({ formData, id }: { formData: FormData; id: string }) => {
     try {
       const { data } = await axios.put(
-        `https://linked-posts.routemisr.com/posts/${id}`,
+        `https://route-posts.routemisr.com/posts/${id}`,
         formData,
         {
           headers: {

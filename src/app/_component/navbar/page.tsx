@@ -199,7 +199,7 @@ export default function Navbar() {
   const [show, setShow] = React.useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-  const { push } = useRouter();
+  const router = useRouter();
   const pathName = usePathname();
   React.useEffect(() => {
     dispatch(getToken());
@@ -300,7 +300,7 @@ export default function Navbar() {
     onClick={() => {
       setShow(false);
       dispatch(clearData());
-      push("/signin");
+      router.replace("/signin");
     }}
     disablePadding
     component="button"
@@ -317,7 +317,7 @@ export default function Navbar() {
                     )}
                   </div>
                 ) : (
-                  name.slice(0, 1).toUpperCase()
+                  name?.slice(0, 1)?.toUpperCase() || "?"
                 )}
               </>
             ) : (

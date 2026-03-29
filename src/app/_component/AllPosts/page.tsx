@@ -131,7 +131,9 @@ export default function AllPosts() {
                   <AddIcon />
                 </Fab>
               </div>
-              {post.comments.length > 0 && (
+
+              {/* API returns commentsCount + topComment, not a comments array */}
+              {post.commentsCount > 0 && (
                 <ExpandMore
                   expand={expandedId == post._id && expanded}
                   onClick={() => {
@@ -148,7 +150,8 @@ export default function AllPosts() {
                 </ExpandMore>
               )}
             </CardActions>
-            {post.comments.length > 0 && (
+
+            {post.commentsCount > 0 && post.topComment && (
               <Collapse
                 in={expandedId == post._id && expanded}
                 timeout="auto"
@@ -165,23 +168,23 @@ export default function AllPosts() {
                   <CardHeader
                     avatar={
                       <Avatar className="bg-mainColor" aria-label="recipe">
-                        {post.comments[0]?.commentCreator.name
-                          .slice(0, 1)
-                          .toUpperCase()}
+                        {post.topComment.commentCreator.name
+                          ?.slice(0, 1)
+                          ?.toUpperCase()}
                       </Avatar>
                     }
-                    title={post.comments[0]?.commentCreator.name}
-                    subheader={post.comments[0]?.createdAt.slice(0, 10)}
+                    title={post.topComment.commentCreator.name}
+                    subheader={post.topComment.createdAt.slice(0, 10)}
                   />
                   <Typography
                     component="div"
                     className="px-9 py-3"
                     sx={{ marginBottom: 2 }}
                   >
-                    {post.comments[0]?.content}
+                    {post.topComment.content}
                   </Typography>
                 </CardContent>
-                {post.comments.length > 1 && (
+                {post.commentsCount > 1 && (
                   <div className="text-center pb-3 hover:text-mainColor hover:underline duration-200">
                     <Link href={`/singlepost/${post._id}`}>
                       Show More Comments

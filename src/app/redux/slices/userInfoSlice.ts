@@ -15,14 +15,15 @@ export const getUserData = createAsyncThunk(
   async () => {
     try {
       const { data } = await axios.get(
-        "https://linked-posts.routemisr.com/users/profile-data",
+        "https://route-posts.routemisr.com/users/profile-data",
         {
           headers: {
             token: localStorage.getItem("token"),
           },
         }
       );
-      return data.user;
+      // API response: { success: true, data: { ...user fields } }
+      return data.data ?? data.user ?? data;
     } catch (error) {
       return error;
     }
@@ -34,7 +35,7 @@ export const updateUserImage = createAsyncThunk(
   async (formData: FormData) => {
     try {
       const { data } = await axios.put(
-        "https://linked-posts.routemisr.com/users/upload-photo",
+        "https://route-posts.routemisr.com/users/upload-photo",
         formData,
         {
           headers: {
@@ -55,7 +56,7 @@ export const changeUserPass = createAsyncThunk(
   async (values: { password: string; newPassword: string }) => {
     try {
       const { data } = await axios.patch(
-        "https://linked-posts.routemisr.com/users/change-password",
+        "https://route-posts.routemisr.com/users/change-password",
         values,
         {
           headers: {
@@ -106,11 +107,12 @@ export const userInfoSlice = createSlice({
       getUserData.fulfilled,
       (state, action: { payload: IUser }) => {
         state.loading = false;
+        if (!action.payload) return;
         state.photo = action.payload.photo;
         state.name = action.payload.name;
         state.dateOfBirth = action.payload.dateOfBirth;
         state.email = action.payload.email;
-        state.id = action.payload._id
+        state.id = action.payload._id;
       }
     );
     builder.addCase(updateUserImage.pending, (state) => {

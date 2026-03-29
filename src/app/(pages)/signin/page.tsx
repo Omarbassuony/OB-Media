@@ -19,7 +19,8 @@ import { useRouter } from "next/navigation";
 export default function SignIN() {
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.loginSlice);
-  const { push } = useRouter();
+  const router = useRouter();
+
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Enter Valid E-mail")
@@ -39,22 +40,24 @@ export default function SignIN() {
     },
     validationSchema,
     onSubmit: async (data) => {
-      await dispatch(signIn(data));
-      if (localStorage.getItem("token")) {
-        push("/");
+      const result = await dispatch(signIn(data));
+      if (result.payload?.success) {
+        router.replace("/");
       }
     },
   });
 
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      push("/");
-      setIsClient(false);
-    } else {
-      setIsClient(true);
+    // Only check localStorage on the client side
+    if (typeof window !== "undefined") {
+      if (localStorage.getItem("token")) {
+        router.replace("/");
+      } else {
+        setIsClient(true);
+      }
     }
-  }, [push]);
+  }, [router]);
 
   return (
     <>
@@ -108,7 +111,6 @@ export default function SignIN() {
               )}
             </form>
           </Paper>
-          
         </Container>
       )}
     </>

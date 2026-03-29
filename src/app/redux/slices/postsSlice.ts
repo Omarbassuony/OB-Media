@@ -18,7 +18,7 @@ export const getPosts = createAsyncThunk("posts/getPosts", async () => {
   try {
     if (localStorage.getItem("token")) {
       const { data } = await axios.get(
-        "https://linked-posts.routemisr.com/posts?limit=50",
+        "https://route-posts.routemisr.com/posts?limit=50",
         {
           headers: {
             token: localStorage.getItem("token"),
@@ -26,7 +26,8 @@ export const getPosts = createAsyncThunk("posts/getPosts", async () => {
         }
       );
 
-      return data.posts;
+      // API response: { success: true, data: { posts: [...] } }
+      return data.data?.posts ?? data.posts;
     }
   } catch (error) {
     return error
@@ -37,7 +38,7 @@ export const getSinglePost = createAsyncThunk("posts/getSinglePost", async (id:s
   try {
     if (localStorage.getItem("token")) {
       const { data } = await axios.get(
-        `https://linked-posts.routemisr.com/posts/${id}`,
+        `https://route-posts.routemisr.com/posts/${id}`,
         {
           headers: {
             token: localStorage.getItem("token"),
@@ -46,7 +47,8 @@ export const getSinglePost = createAsyncThunk("posts/getSinglePost", async (id:s
       );
 
 
-      return data.post;
+      // API response: { success: true, data: { post: {...} } }
+      return data.data?.post ?? data.post;
     }
   } catch (error) {
     return error
@@ -63,14 +65,18 @@ const postsSlice = createSlice({
     });
     builder.addCase(getPosts.fulfilled, (state, action) => {
       state.loading = false;
-      state.posts = action.payload;
+      if (action.payload) {
+        state.posts = action.payload;
+      }
     });
     builder.addCase(getSinglePost.pending, (state)=>{
       state.loading = true
     })
-    builder.addCase(getSinglePost.fulfilled, (state,action)=>{
-      state.loading = false
-      state.post = action.payload
+    builder.addCase(getSinglePost.fulfilled, (state, action) => {
+      state.loading = false;
+      if (action.payload) {
+        state.post = action.payload;
+      }
     })
   },
 });

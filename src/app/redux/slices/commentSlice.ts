@@ -25,7 +25,7 @@ export const addComment = createAsyncThunk(
   }) => {
     try {
       const { data } = await axios.post(
-        "https://linked-posts.routemisr.com/comments",
+        "https://route-posts.routemisr.com/comments",
         { ...content, ...id },
         {
           headers: {
@@ -46,7 +46,7 @@ export const deleteComment = createAsyncThunk(
   async (id: string) => {
     try {
       const { data } = await axios.delete(
-        `https://linked-posts.routemisr.com/comments/${id}`,
+        `https://route-posts.routemisr.com/comments/${id}`,
         {
           headers: {
             token: localStorage.getItem("token"),
